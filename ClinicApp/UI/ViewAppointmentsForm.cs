@@ -8,37 +8,33 @@ namespace ClinicApp.UI
 {
     public class ViewAppointmentsForm : Form
     {
-        private DataGridView dgv;
-
-        public ViewAppointmentsForm(string category)
-        {
-            InitializeUI(category);
-        }
+        public ViewAppointmentsForm(string category) { InitializeUI(category); }
 
         private void InitializeUI(string category)
         {
             this.Text = $"{category} Appointments";
-            this.Size = new Size(800, 500);
+            this.Size = new Size(850, 500);
             this.StartPosition = FormStartPosition.CenterParent;
+            this.FormBorderStyle = FormBorderStyle.Sizable;
+            this.MinimumSize = new Size(600, 300);
 
-            dgv = new DataGridView { Dock = DockStyle.Fill, ReadOnly = true, AllowUserToAddRows = false, SelectionMode = DataGridViewSelectionMode.FullRowSelect };
+            var dgv = new DataGridView { Dock = DockStyle.Fill, ReadOnly = true, AllowUserToAddRows = false, SelectionMode = DataGridViewSelectionMode.FullRowSelect, BackgroundColor = Color.White, Font = new Font("Segoe UI", 10) };
             
-            var data = DataManager.LoadData();
-            var filtered = data.Appointments.Where(a => a.Category == category).OrderBy(a => a.Date).ThenBy(a => a.TimeSlot).ToList();
-
-            dgv.DataSource = filtered.Select(a => new 
+            var appointments = DatabaseHelper.GetAppointments(category);
+            var viewData = appointments.Select(a => new 
             { 
                 a.PatientName, 
                 a.PhoneNumber, 
-                Date = a.Date.ToShortDateString(), 
+                Date = a.Date.ToString("yyyy-MM-dd"), 
                 Time = a.TimeSlot.ToString(@"hh\:mm"), 
                 a.Doctor,
-                BookedOn = a.CreatedAt.ToShortDateString()
+                BookedOn = a.CreatedAt.ToString("yyyy-MM-dd HH:mm")
             }).ToList();
 
-            dgv.Columns["Date"].HeaderText = "Appointment Date";
-            dgv.Columns["Time"].HeaderText = "Time Slot";
-            dgv.Columns["BookedOn"].HeaderText = "Booked On";
+            dgv.DataSource = viewData;
+            if(dgv.Columns.Contains("Date")) dgv.Columns["Date"].HeaderText = "Appointment Date";
+            if(dgv.Columns.Contains("Time")) dgv.Columns["Time"].HeaderText = "Time Slot";
+            if(dgv.Columns.Contains("BookedOn")) dgv.Columns["BookedOn"].HeaderText = "Booked On";
 
             this.Controls.Add(dgv);
         }
