@@ -3,12 +3,11 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net48</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-    <RootNamespace>ClinicApp</RootNamespace>
-    <AssemblyName>ClinicApp</AssemblyName>
-    <ApplicationIcon />
-    <StartupObject>ClinicApp.Program</StartupObject>
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+    <PublishSingleFile>false</PublishSingleFile>
+    <SelfContained>false</SelfContained>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
   </ItemGroup>
 </Project>
