@@ -1,4 +1,4 @@
-name: Build and Package Clinic App (Production)
+name: Build and Package Clinic App
 
 on:
   workflow_dispatch:
@@ -8,7 +8,6 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -18,12 +17,13 @@ jobs:
       with:
         dotnet-version: '8.0.x'
 
-    - name: Restore and Build
+    - name: Restore, Build, and Publish
       run: |
         dotnet restore ClinicApp/ClinicApp.csproj
-        dotnet publish ClinicApp/ClinicApp.csproj --configuration Release --output ./publish --runtime win-x86 --self-contained false
+        dotnet build ClinicApp/ClinicApp.csproj --configuration Release --no-restore
+        dotnet publish ClinicApp/ClinicApp.csproj --configuration Release --output ./publish
 
-    - name: Download Inno Setup
+    - name: Download and Install Inno Setup
       run: |
         Invoke-WebRequest -Uri "https://files.jrsoftware.org/is/6/innosetup-6.2.2.exe" -OutFile "innosetup.exe"
         Start-Process -FilePath "innosetup.exe" -ArgumentList "/VERYSILENT /NORESTART" -Wait
