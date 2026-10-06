@@ -1,5 +1,6 @@
 name: Build and Package Clinic App
 
+# Triggers the workflow on push or pull request events for the "main" branch
 on:
   push:
     branches: [ "main" ]
@@ -8,24 +9,34 @@ on:
 
 jobs:
   build:
+    # Runs on the latest Windows runner provided by GitHub
     runs-on: windows-latest
 
     steps:
-    - name: Checkout Code
+    # Step 1: Download the repository code to the runner
+    - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Setup .NET SDK
+    # Step 2: Setup the .NET SDK (Required for the dotnet CLI commands)
+    - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x' # Required for the dotnet CLI, even though the app targets .NET Framework 4.8
+        dotnet-version: '8.0.x' 
 
-    - name: Restore, Build, and Publish
-      run: |
-        dotnet restore ClinicApp/ClinicApp.csproj
-        dotnet build ClinicApp/ClinicApp.csproj --configuration Release --no-restore
-        dotnet publish ClinicApp/ClinicApp.csproj --configuration Release --output ./publish
+    # Step 3: Restore NuGet packages (Downloads Newtonsoft.Json)
+    - name: Restore dependencies
+      run: dotnet restore ClinicApp/ClinicApp.csproj
 
-    - name: Upload Artifact
+    # Step 4: Compile the code in Release mode
+    - name: Build
+      run: dotnet build ClinicApp/ClinicApp.csproj --configuration Release --no-restore
+
+    # Step 5: Publish the app into a clean, standalone folder
+    - name: Publish
+      run: dotnet publish ClinicApp/ClinicApp.csproj --configuration Release --output ./publish --no-build
+
+    # Step 6: Upload the compiled .exe and DLLs as a downloadable artifact
+    - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: ClinicApp-Windows-Release
