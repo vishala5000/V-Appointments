@@ -6,7 +6,7 @@ namespace ClinicApp.Core
     public static class Logger
     {
         private static readonly string LogDir = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ClinicApp", "Logs");
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "VSoft", "Logs");
 
         public static void Info(string message) => Write("INFO", message);
         public static void Error(string message, Exception ex = null) => Write("ERROR", $"{message} | {ex?.Message}\n{ex?.StackTrace}");
@@ -16,7 +16,8 @@ namespace ClinicApp.Core
             try
             {
                 if (!Directory.Exists(LogDir)) Directory.CreateDirectory(LogDir);
-                string logFile = Path.Combine(LogDir, $"ClinicApp_{DateTime.Now:yyyy-MM-dd}.log");
+                // Branded log file name
+                string logFile = Path.Combine(LogDir, $"VSoft_{DateTime.Now:yyyy-MM-dd}.log");
                 string entry = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{level}] {message}{Environment.NewLine}";
                 File.AppendAllText(logFile, entry);
             }
