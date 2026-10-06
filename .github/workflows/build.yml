@@ -14,27 +14,20 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v2
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x' # Required for the dotnet CLI, even though the app targets .NET Framework 4.8
 
-    - name: Setup NuGet
-      uses: nuget/setup-nuget@v2
-
-    - name: Restore NuGet Packages
-      run: nuget restore ClinicApp/ClinicApp.sln
-
-    - name: Build Release
-      run: msbuild ClinicApp/ClinicApp.sln /p:Configuration=Release /p:Platform="Any CPU"
-
-    - name: Package Artifacts
+    - name: Restore, Build, and Publish
       run: |
-        $sourceDir = "ClinicApp/bin/Release/net48"
-        $zipFile = "ClinicApp_Release.zip"
-        Compress-Archive -Path "$sourceDir\*" -DestinationPath $zipFile
+        dotnet restore ClinicApp/ClinicApp.csproj
+        dotnet build ClinicApp/ClinicApp.csproj --configuration Release --no-restore
+        dotnet publish ClinicApp/ClinicApp.csproj --configuration Release --output ./publish
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: ClinicApp-Windows-Release
-        path: ClinicApp_Release.zip
+        path: ./publish
         retention-days: 14
