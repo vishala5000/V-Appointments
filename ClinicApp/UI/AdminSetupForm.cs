@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using ClinicApp.Data;
@@ -23,6 +24,19 @@ namespace ClinicApp.UI
             this.WindowState = FormWindowState.Maximized;
             this.FormBorderStyle = FormBorderStyle.Sizable;
 
+            // --- HEADER PANEL ---
+            Panel headerPanel = new Panel { Dock = DockStyle.Top, Height = 80, BackColor = Color.White, Padding = new Padding(20, 0, 0, 0) };
+            PictureBox picLogo = new PictureBox { Size = new Size(60, 60), SizeMode = PictureBoxSizeMode.Zoom, Anchor = AnchorStyles.Left | AnchorStyles.Top };
+            string logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logo.png");
+            if (File.Exists(logoPath)) picLogo.Image = Image.FromFile(logoPath);
+            picLogo.Location = new Point(20, 10);
+            
+            Label lblTitle = new Label { Text = "Initial System Configuration", Font = new Font("Segoe UI", 18, FontStyle.Bold), ForeColor = Color.DodgerBlue, AutoSize = true, Location = new Point(90, 20) };
+            
+            headerPanel.Controls.Add(picLogo);
+            headerPanel.Controls.Add(lblTitle);
+            // --------------------
+
             var mainLayout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 3, RowCount = 1 };
             mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
             mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 600));
@@ -34,8 +48,7 @@ namespace ClinicApp.UI
             var layout = new TableLayoutPanel { Dock = DockStyle.Top, ColumnCount = 1, AutoSize = true };
             layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
 
-            layout.Controls.Add(new Label { Text = "Initial Clinic Configuration", Font = new Font("Segoe UI", 20, FontStyle.Bold), AutoSize = true, Padding = new Padding(0, 20, 0, 20), ForeColor = Color.DodgerBlue });
-
+            // Form Fields
             AddLabel(layout, "Clinic / Hospital Name:");
             txtClinicName = new TextBox { Font = new Font("Segoe UI", 11), Height = 30 };
             layout.Controls.Add(txtClinicName);
@@ -51,7 +64,7 @@ namespace ClinicApp.UI
             lstDoctors = new ListBox { Height = 120, Font = new Font("Segoe UI", 11) };
             layout.Controls.Add(lstDoctors);
 
-            AddLabel(layout, "Operating Hours:");
+            AddLabel(layout, "Operating Hours (Fixed Daily Schedule):");
             var timePanel = new FlowLayoutPanel { Height = 40 };
             dtpStart = new DateTimePicker { Format = DateTimePickerFormat.Time, Width = 150, Font = new Font("Segoe UI", 11) };
             dtpEnd = new DateTimePicker { Format = DateTimePickerFormat.Time, Width = 150, Font = new Font("Segoe UI", 11) };
@@ -74,7 +87,10 @@ namespace ClinicApp.UI
             layout.Controls.Add(btnSave);
 
             formContainer.Controls.Add(layout);
+            
+            // Add Header first, then Layout
             this.Controls.Add(mainLayout);
+            this.Controls.Add(headerPanel);
 
             btnAddDoc.Click += (s, e) => { if(!string.IsNullOrWhiteSpace(txtNewDoctor.Text)) lstDoctors.Items.Add(txtNewDoctor.Text.Trim()); txtNewDoctor.Clear(); };
             btnRemDoc.Click += (s, e) => { if(lstDoctors.SelectedItem != null) lstDoctors.Items.Remove(lstDoctors.SelectedItem); };
