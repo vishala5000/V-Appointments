@@ -9,7 +9,7 @@ namespace ClinicApp.Core
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ClinicApp", "Logs");
 
         public static void Info(string message) => Write("INFO", message);
-        public static void Error(string message, Exception ex = null) => Write("ERROR", $"{message} | {ex?.Message}");
+        public static void Error(string message, Exception ex = null) => Write("ERROR", $"{message} | {ex?.Message}\n{ex?.StackTrace}");
 
         private static void Write(string level, string message)
         {
@@ -20,7 +20,7 @@ namespace ClinicApp.Core
                 string entry = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{level}] {message}{Environment.NewLine}";
                 File.AppendAllText(logFile, entry);
             }
-            catch { /* Fail silently to avoid crashing the app on logging errors */ }
+            catch { /* Fail silently to prevent app crash on logging errors */ }
         }
     }
 }
