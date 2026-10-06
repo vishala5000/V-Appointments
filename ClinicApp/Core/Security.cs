@@ -6,7 +6,6 @@ namespace ClinicApp.Core
 {
     public static class Security
     {
-        // Encrypts string using current Windows User account context
         public static string Encrypt(string plainText)
         {
             if (string.IsNullOrEmpty(plainText)) return plainText;
@@ -15,7 +14,6 @@ namespace ClinicApp.Core
             return Convert.ToBase64String(encryptedBytes);
         }
 
-        // Decrypts string
         public static string Decrypt(string encryptedText)
         {
             if (string.IsNullOrEmpty(encryptedText)) return encryptedText;
@@ -25,10 +23,7 @@ namespace ClinicApp.Core
                 byte[] plainBytes = ProtectedData.Unprotect(encryptedBytes, null, DataProtectionScope.CurrentUser);
                 return Encoding.UTF8.GetString(plainBytes);
             }
-            catch
-            {
-                return " [DECRYPTION FAILED] ";
-            }
+            catch { return "[DECRYPTION FAILED]"; }
         }
     }
 }
