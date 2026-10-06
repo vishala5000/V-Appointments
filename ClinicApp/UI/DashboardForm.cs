@@ -18,32 +18,31 @@ namespace ClinicApp.UI
             this.FormBorderStyle = FormBorderStyle.Sizable;
             this.BackColor = Color.White;
 
-            // --- HEADER PANEL (LOGO + TITLE) ---
-            Panel headerPanel = new Panel { Dock = DockStyle.Top, Height = 80, BackColor = Color.FromArgb(245, 245, 245), Padding = new Padding(20, 0, 0, 0) };
+            // HEADER PANEL
+            Panel headerPanel = new Panel { Dock = DockStyle.Top, Height = 80, BackColor = Color.FromArgb(245, 245, 245) };
             
-            // Load Logo safely
-            PictureBox picLogo = new PictureBox { Size = new Size(60, 60), SizeMode = PictureBoxSizeMode.Zoom, Anchor = AnchorStyles.Left | AnchorStyles.Top };
+            PictureBox picLogo = new PictureBox { Size = new Size(60, 60), SizeMode = PictureBoxSizeMode.Zoom };
             string logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logo.png");
             if (File.Exists(logoPath)) {
-                picLogo.Image = Image.FromFile(logoPath);
-            } else {
-                picLogo.BackColor = Color.LightGray; // Fallback if missing
+                // FIX: Load into MemoryStream to prevent file locking
+                using (var fs = new FileStream(logoPath, FileMode.Open, FileAccess.Read))
+                    picLogo.Image = Image.FromStream(fs);
             }
             picLogo.Location = new Point(20, 10);
 
-            Label lblTitle = new Label { 
-                Text = config.ClinicName, 
-                Font = new Font("Segoe UI", 18, FontStyle.Bold), 
-                ForeColor = Color.DodgerBlue, 
-                AutoSize = true, 
-                Location = new Point(90, 20) 
-            };
+            Label lblTitle = new Label { Text = config.ClinicName, Font = new Font("Segoe UI", 18, FontStyle.Bold), ForeColor = Color.DodgerBlue, AutoSize = true, Location = new Point(90, 20) };
+            
+            // NEW: Settings Button
+            Button btnSettings = new Button { Text = "⚙ Settings", Size = new Size(120, 40), BackColor = Color.Gray, ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Font = new Font("Segoe UI", 10, FontStyle.Bold), Anchor = AnchorStyles.Top | AnchorStyles.Right };
+            btnSettings.Location = new Point(headerPanel.Width - btnSettings.Width - 20, 20);
+            headerPanel.Resize += (s, e) => btnSettings.Location = new Point(headerPanel.Width - btnSettings.Width - 20, 20);
+            btnSettings.Click += (s, e) => new AdminSetupForm(true).ShowDialog(); // Opens in Edit mode
 
             headerPanel.Controls.Add(picLogo);
             headerPanel.Controls.Add(lblTitle);
-            // ------------------------------------
+            headerPanel.Controls.Add(btnSettings);
 
-            // --- MAIN CONTENT (TABS) ---
+            // TABS
             TabControl tabControl = new TabControl { Dock = DockStyle.Fill, Font = new Font("Segoe UI", 11) };
             string[] categories = { "Normal", "Special", "VIP" };
             Color[] colors = { Color.DodgerBlue, Color.MediumPurple, Color.Goldenrod };
@@ -56,9 +55,7 @@ namespace ClinicApp.UI
                 var innerPanel = new Panel { Size = new Size(450, 350), Anchor = AnchorStyles.None };
                 
                 outerPanel.Controls.Add(innerPanel);
-                outerPanel.Resize += (s, e) => {
-                    innerPanel.Location = new Point((outerPanel.Width - innerPanel.Width) / 2, (outerPanel.Height - innerPanel.Height) / 2);
-                };
+                outerPanel.Resize += (s, e) => innerPanel.Location = new Point((outerPanel.Width - innerPanel.Width) / 2, (outerPanel.Height - innerPanel.Height) / 2);
 
                 var lbl = new Label { Text = $"Manage {cat} Appointments", Font = new Font("Segoe UI", 18, FontStyle.Bold), AutoSize = true, Location = new Point(50, 50), ForeColor = colors[i] };
                 var btnBook = CreateStyledButton("Book Appointment", new Point(50, 150), colors[i]);
@@ -72,7 +69,6 @@ namespace ClinicApp.UI
                 tabControl.TabPages.Add(tab);
             }
 
-            // Add Header first (so it stays at top), then Tabs
             this.Controls.Add(tabControl); 
             this.Controls.Add(headerPanel); 
         }
