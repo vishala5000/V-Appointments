@@ -16,13 +16,13 @@ OutputBaseFilename=ClinicApp_Setup
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
-PrivilegesRequired=lowest ; Installs per-user, no admin UAC prompt needed
+PrivilegesRequired=lowest
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Files]
-; Copy all published files from the dotnet publish output
+; Copies all published files, including x86/x64 SQLite interop DLLs
 Source: "..\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
