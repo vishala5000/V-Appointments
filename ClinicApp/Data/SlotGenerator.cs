@@ -13,7 +13,6 @@ namespace ClinicApp.Data
             var current = start;
             var duration = TimeSpan.FromMinutes(durationMins);
 
-            // Mathematical division: strictly non-overlapping
             while (current.Add(duration) <= end)
             {
                 slots.Add(current);
@@ -24,20 +23,14 @@ namespace ClinicApp.Data
 
         public static List<TimeSpan> GetAvailableSlots(string category, DateTime date, string doctor)
         {
-            var config = DataManager.LoadData().Config;
+            var config = DataManager.LoadConfig();
             int duration = category == "Normal" ? config.NormalDurationMins :
                            category == "Special" ? config.SpecialDurationMins : config.VipDurationMins;
 
             var allSlots = GenerateSlots(config.StartTime, config.EndTime, duration);
-            var appointments = DataManager.LoadData().Appointments;
+            var bookedSlots = DatabaseHelper.GetBookedSlots(category, date.ToString("yyyy-MM-dd"), doctor);
 
-            // Filter out slots already booked by this specific doctor on this date for this category
-            var bookedSlots = appointments
-                .Where(a => a.Category == category && a.Date.Date == date.Date && a.Doctor == doctor)
-                .Select(a => a.TimeSlot)
-                .ToHashSet();
-
-            return allSlots.Where(s => !bookedSlots.Contains(s)).ToList();
+            return allSlots.Where(s => !bookedSlots.Contains(s.ToString(@"hh\:mm"))).ToList();
         }
     }
 }
