@@ -1,1 +1,40 @@
+name: Build and Package Clinic App
 
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Setup NuGet
+      uses: nuget/setup-nuget@v2
+
+    - name: Restore NuGet Packages
+      run: nuget restore ClinicApp/ClinicApp.sln
+
+    - name: Build Release
+      run: msbuild ClinicApp/ClinicApp.sln /p:Configuration=Release /p:Platform="Any CPU"
+
+    - name: Package Artifacts
+      run: |
+        $sourceDir = "ClinicApp/bin/Release/net48"
+        $zipFile = "ClinicApp_Release.zip"
+        Compress-Archive -Path "$sourceDir\*" -DestinationPath $zipFile
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ClinicApp-Windows-Release
+        path: ClinicApp_Release.zip
+        retention-days: 14
