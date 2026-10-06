@@ -1,6 +1,6 @@
-#define MyAppName "Clinic Appointment System"
+#define MyAppName "V Soft Appointments"
 #define MyAppVersion "1.0.0"
-#define MyAppPublisher "Clinic IT Dept"
+#define MyAppPublisher "V Soft"
 #define MyAppExeName "ClinicApp.exe"
 
 [Setup]
@@ -12,7 +12,7 @@ DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 OutputDir=Output
-OutputBaseFilename=ClinicApp_Setup
+OutputBaseFilename=VSoft_Appointments_Setup
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -22,7 +22,6 @@ PrivilegesRequired=lowest
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Files]
-; Copies all published files, including x86/x64 SQLite interop DLLs
 Source: "..\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
