@@ -5,12 +5,12 @@
     <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>ClinicApp</RootNamespace>
     <AssemblyName>ClinicApp</AssemblyName>
+    <Prefer32Bit>true</Prefer32Bit> <!-- Ensures consistent 32-bit execution -->
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
+    <!-- Changed to standard SQLite to avoid native interop DLL deployment issues -->
+    <PackageReference Include="System.Data.SQLite" Version="1.0.118" /> 
   </ItemGroup>
-  
-  <!-- ADD THIS SECTION TO INCLUDE THE LOGO -->
   <ItemGroup>
     <Content Include="logo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
