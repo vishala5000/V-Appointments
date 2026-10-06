@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using ClinicApp.Data;
 
@@ -15,7 +16,34 @@ namespace ClinicApp.UI
             this.Text = $"Employee Dashboard - {config.ClinicName}";
             this.WindowState = FormWindowState.Maximized;
             this.FormBorderStyle = FormBorderStyle.Sizable;
+            this.BackColor = Color.White;
 
+            // --- HEADER PANEL (LOGO + TITLE) ---
+            Panel headerPanel = new Panel { Dock = DockStyle.Top, Height = 80, BackColor = Color.FromArgb(245, 245, 245), Padding = new Padding(20, 0, 0, 0) };
+            
+            // Load Logo safely
+            PictureBox picLogo = new PictureBox { Size = new Size(60, 60), SizeMode = PictureBoxSizeMode.Zoom, Anchor = AnchorStyles.Left | AnchorStyles.Top };
+            string logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logo.png");
+            if (File.Exists(logoPath)) {
+                picLogo.Image = Image.FromFile(logoPath);
+            } else {
+                picLogo.BackColor = Color.LightGray; // Fallback if missing
+            }
+            picLogo.Location = new Point(20, 10);
+
+            Label lblTitle = new Label { 
+                Text = config.ClinicName, 
+                Font = new Font("Segoe UI", 18, FontStyle.Bold), 
+                ForeColor = Color.DodgerBlue, 
+                AutoSize = true, 
+                Location = new Point(90, 20) 
+            };
+
+            headerPanel.Controls.Add(picLogo);
+            headerPanel.Controls.Add(lblTitle);
+            // ------------------------------------
+
+            // --- MAIN CONTENT (TABS) ---
             TabControl tabControl = new TabControl { Dock = DockStyle.Fill, Font = new Font("Segoe UI", 11) };
             string[] categories = { "Normal", "Special", "VIP" };
             Color[] colors = { Color.DodgerBlue, Color.MediumPurple, Color.Goldenrod };
@@ -43,7 +71,10 @@ namespace ClinicApp.UI
                 tab.Controls.Add(outerPanel);
                 tabControl.TabPages.Add(tab);
             }
-            this.Controls.Add(tabControl);
+
+            // Add Header first (so it stays at top), then Tabs
+            this.Controls.Add(tabControl); 
+            this.Controls.Add(headerPanel); 
         }
 
         private Button CreateStyledButton(string text, Point location, Color bgColor)
