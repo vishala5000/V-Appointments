@@ -44,11 +44,22 @@ namespace ClinicApp.UI
             dtpDate.ValueChanged += (s, e) => LoadSlots();
             cmbDoctor.SelectedIndexChanged += (s, e) => LoadSlots();
 
-            var btnBook = new Button { Text = "Confirm Booking", Width = 150, Height = 40, BackColor = Color.DodgerBlue, ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Font = new Font("Segoe UI", 11, FontStyle.Bold) };
+            // FIX: Removed SetCellStyle. Used Margin property directly on the button.
+            var btnBook = new Button 
+            { 
+                Text = "Confirm Booking", 
+                Width = 150, 
+                Height = 40, 
+                BackColor = Color.DodgerBlue, 
+                ForeColor = Color.White, 
+                FlatStyle = FlatStyle.Flat, 
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                Margin = new Padding(0, 20, 0, 0) // Adds space above the button
+            };
+            
             btnBook.Click += BtnBook_Click;
             layout.Controls.Add(btnBook);
             layout.SetColumnSpan(btnBook, 2);
-            layout.SetCellStyle(btnBook, new TableLayoutPanelCellPadding(0, 20, 0, 0));
 
             this.Controls.Add(layout);
             LoadSlots();
