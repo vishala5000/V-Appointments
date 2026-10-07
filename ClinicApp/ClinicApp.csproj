@@ -5,13 +5,17 @@
     <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>ClinicApp</RootNamespace>
     <AssemblyName>ClinicApp</AssemblyName>
-    <Prefer32Bit>true</Prefer32Bit> <!-- Ensures consistent 32-bit execution -->
+    <Prefer32Bit>true</Prefer32Bit>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
+
   <ItemGroup>
-    <!-- Changed to standard SQLite to avoid native interop DLL deployment issues -->
-    <PackageReference Include="System.Data.SQLite" Version="1.0.118" /> 
+    <!-- Use Core version to avoid native interop DLL conflicts in .NET SDK builds -->
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
   </ItemGroup>
+
   <ItemGroup>
+    <!-- Ensure logo.png is always copied to the output folder -->
     <Content Include="logo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
