@@ -20,7 +20,6 @@ namespace ClinicApp
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 
-                // Initialize Database first
                 DatabaseHelper.Initialize();
 
                 if (!DataManager.IsConfigured())
@@ -30,10 +29,7 @@ namespace ClinicApp
             }
             catch (Exception ex)
             {
-                // Log the error
                 Core.Logger.Error("Fatal startup error", ex);
-                
-                // Show the EXACT error message to the user for debugging
                 MessageBox.Show(
                     $"A critical error occurred:\n\n{ex.Message}\n\nStack Trace:\n{ex.StackTrace}", 
                     "V Soft - Fatal Error", 
