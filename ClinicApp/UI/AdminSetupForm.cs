@@ -17,12 +17,11 @@ namespace ClinicApp.UI
         private Button btnSave;
         private bool _isEditing;
 
-        // NEW: Accepts isEditing parameter to load existing data
         public AdminSetupForm(bool isEditing = false) { _isEditing = isEditing; InitializeUI(); }
 
         private void InitializeUI()
         {
-            this.Text = _isEditing ? "Clinic Settings" : "Clinic Admin Setup";
+            this.Text = _isEditing ? "V Soft - System Settings" : "V Soft - Initial Setup";
             this.BackColor = Color.FromArgb(245, 245, 245);
             this.WindowState = FormWindowState.Maximized;
             this.FormBorderStyle = FormBorderStyle.Sizable;
@@ -30,11 +29,31 @@ namespace ClinicApp.UI
             Panel headerPanel = new Panel { Dock = DockStyle.Top, Height = 80, BackColor = Color.White };
             PictureBox picLogo = new PictureBox { Size = new Size(60, 60), SizeMode = PictureBoxSizeMode.Zoom };
             string logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logo.png");
-            if (File.Exists(logoPath)) { using (var fs = new FileStream(logoPath, FileMode.Open, FileAccess.Read)) picLogo.Image = Image.FromStream(fs); }
+            
+            try
+            {
+                if (File.Exists(logoPath))
+                {
+                    using (var fs = new FileStream(logoPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    {
+                        picLogo.Image = Image.FromStream(fs);
+                    }
+                }
+                else
+                {
+                    picLogo.BackColor = Color.DodgerBlue;
+                }
+            }
+            catch
+            {
+                picLogo.BackColor = Color.LightGray;
+            }
+            
             picLogo.Location = new Point(20, 10);
             
             Label lblTitle = new Label { Text = _isEditing ? "Update System Configuration" : "Initial System Configuration", Font = new Font("Segoe UI", 18, FontStyle.Bold), ForeColor = Color.DodgerBlue, AutoSize = true, Location = new Point(90, 20) };
-            headerPanel.Controls.Add(picLogo); headerPanel.Controls.Add(lblTitle);
+            headerPanel.Controls.Add(picLogo); 
+            headerPanel.Controls.Add(lblTitle);
 
             var mainLayout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 3, RowCount = 1 };
             mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
@@ -88,11 +107,11 @@ namespace ClinicApp.UI
             btnAddDoc.Click += (s, e) => { if(!string.IsNullOrWhiteSpace(txtNewDoctor.Text)) lstDoctors.Items.Add(txtNewDoctor.Text.Trim()); txtNewDoctor.Clear(); };
             btnRemDoc.Click += (s, e) => { if(lstDoctors.SelectedItem != null) lstDoctors.Items.Remove(lstDoctors.SelectedItem); };
 
-            // NEW: If editing, pre-fill the form with existing data
             if (_isEditing)
             {
                 var config = DataManager.LoadConfig();
                 txtClinicName.Text = config.ClinicName;
+                lstDoctors.Items.Clear();
                 lstDoctors.Items.AddRange(config.Doctors.ToArray());
                 dtpStart.Value = DateTime.Today.Add(config.StartTime);
                 dtpEnd.Value = DateTime.Today.Add(config.EndTime);
@@ -109,7 +128,6 @@ namespace ClinicApp.UI
 
         private void BtnSave_Click(object sender, EventArgs e)
         {
-            // NEW: Validate times
             if (dtpStart.Value.TimeOfDay >= dtpEnd.Value.TimeOfDay)
             {
                 MessageBox.Show("End Time must be after Start Time.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
