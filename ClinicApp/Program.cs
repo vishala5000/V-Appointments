@@ -14,13 +14,15 @@ namespace ClinicApp
         [STAThread]
         static void Main()
         {
-            SetProcessDPIAware();
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-
             try
             {
+                SetProcessDPIAware();
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+
+                // Initialize Database first
                 DatabaseHelper.Initialize();
+
                 if (!DataManager.IsConfigured())
                     Application.Run(new AdminSetupForm());
                 else
@@ -28,9 +30,15 @@ namespace ClinicApp
             }
             catch (Exception ex)
             {
+                // Log the error
                 Core.Logger.Error("Fatal startup error", ex);
-                MessageBox.Show("A critical error occurred. Check logs for details.", "Fatal Error", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                
+                // Show the EXACT error message to the user for debugging
+                MessageBox.Show(
+                    $"A critical error occurred:\n\n{ex.Message}\n\nStack Trace:\n{ex.StackTrace}", 
+                    "V Soft - Fatal Error", 
+                    MessageBoxButtons.OK, 
+                    MessageBoxIcon.Error);
             }
         }
     }
